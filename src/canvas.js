@@ -12,12 +12,10 @@ canvas.height = HEIGHT;
 
 const c = canvas.getContext("2d");
 
-let mouseX = 0;
-let mouseY = 0;
+let mousePos = {x: 0, y: 0}
 
 const getMousePosition = e => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
+  mousePos = {x: e.clientX, y: e.clientY};
 };
 
 addEventListener("mousemove", getMousePosition, false);
@@ -32,15 +30,18 @@ const getVectorCoord = ({width, height}, modulo) => {
   return result
 }
 
-let coords = getVectorCoord({width : WIDTH, height : HEIGHT}, 50)
+let coords = getVectorCoord({width : WIDTH, height : HEIGHT}, 30)
 
-const createVectors = () => coords.map(el => new Vector(el, 8, c))
+const createVectors = () => coords.map(el => new Vector(el, 12, c))
 const vectors = createVectors()
 //console.log(vectors)
 
 const animate = () => {
   c.clearRect(0, 0, WIDTH, HEIGHT);
-  vectors.map(vector => vector.draw())
+  vectors.map(vector => {
+    vector.updateAngle(mousePos)
+    vector.draw()
+  })
   requestAnimationFrame(animate);
 };
 

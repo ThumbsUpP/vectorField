@@ -1,7 +1,5 @@
 import { WINDOW_SIZE } from "./constants";
-import Ball from "./Ball";
 import Vector from "./Vector";
-import Line from "./Line";
 import { compact } from "lodash/fp";
 
 const { WIDTH, HEIGHT } = WINDOW_SIZE;
@@ -12,13 +10,13 @@ canvas.height = HEIGHT;
 
 const c = canvas.getContext("2d");
 
-let mousePos = {x: 0, y: 0}
+let mousePos = {x: 0, y: 0};
+let vectorCoords
+let vectors
 
 const getMousePosition = e => {
   mousePos = {x: e.clientX, y: e.clientY};
 };
-
-addEventListener("mousemove", getMousePosition, false);
 
 const getVectorCoord = ({width, height}, modulo) => {
   let result = []
@@ -30,19 +28,26 @@ const getVectorCoord = ({width, height}, modulo) => {
   return result
 }
 
-let coords = getVectorCoord({width : WIDTH, height : HEIGHT}, 30)
-
-const createVectors = () => coords.map(el => new Vector(el, 12, c))
-const vectors = createVectors()
-//console.log(vectors)
+const createVectors = () => vectorCoords.map(el => new Vector(el, 12, c))
 
 const animate = () => {
   c.clearRect(0, 0, WIDTH, HEIGHT);
-  vectors.map(vector => {
-    vector.updateAngle(mousePos)
-    vector.draw()
-  })
+  vectors.map(vector => vector.draw(mousePos) )
   requestAnimationFrame(animate);
 };
 
-animate();
+function init() {
+  initVector()
+  animate();
+  addEventListener("mousemove", getMousePosition, false);
+}
+
+
+function initVector(){
+  vectorCoords = getVectorCoord({width : WIDTH, height : HEIGHT}, 50)
+  vectors = createVectors()
+} 
+
+addEventListener("resize", initVector)
+
+init()
